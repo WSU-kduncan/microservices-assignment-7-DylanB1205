@@ -5,7 +5,7 @@
         "name": "ShopFlowProServiceApplication",
         "request": "launch",
         "mainClass": "com.wsu.shopflowproservice.ShopFlowProServiceApplication",
-        "projectName": "Shop-Flow-Pro-Microservice",
+        "projectName": "microservices-assignment-7-DylanB1205",
         "args": "",
         "env": {
           "SERVER_PORT": "8080",
