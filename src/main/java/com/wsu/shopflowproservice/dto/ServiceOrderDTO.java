@@ -1,5 +1,7 @@
 package com.wsu.shopflowproservice.dto;
 
+import java.util.Date;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,18 +15,14 @@ import lombok.Setter;
 @Builder
 public class ServiceOrderDTO {
 
-    /**
-     * fields for 
-     * ServiceOrderId
-     * VIN
-     * MechanicID
-     * ServiceID
-     * DateRecieved
-     * DateCompleted
-     * CustomerFirstName
-     * CustomerLastName
-     * ServiceCost
-     * 
-     * All are @NotBlank EXCEPT DateCompleted
-     */
+    private Integer serviceOrderId;
+    private String VIN;
+    private Integer mechanicId;
+    private Integer ServiceId;
+    private Date dateRecieved;
+    private Date dateCompleted;
+    private String customerFirstName;
+    private String customerLastName;
+    private Float serviceCost;
+
 }

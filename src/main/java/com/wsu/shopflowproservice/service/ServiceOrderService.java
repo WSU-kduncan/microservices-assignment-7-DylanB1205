@@ -19,7 +19,7 @@ public class ServiceOrderService {
     private final ServiceOrderRepository serviceOrderRepository;
 
 
-    public ServiceOrder get(){
+    public ServiceOrder get(Integer serviceOrderId){
         /**
          * Retrieve a serviceOrder
          * has try catch block

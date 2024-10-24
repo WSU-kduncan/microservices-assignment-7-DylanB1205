@@ -31,9 +31,8 @@ import java.util.Set;
 @Table(name = "ServiceOrder")
 public class ServiceOrder {
 
-    /**
-     * List of columns within the ServiceOrder table
-     * Uses @JsonFormat for data formatting
-     * Uses @OneToMany or @JoinColumn if needed (not quite certain how to use these and what their for)
-     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ServiceOrderID")
+    private Integer serviceOrderId;
 }

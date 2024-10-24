@@ -4,6 +4,7 @@ import org.hibernate.mapping.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.wsu.shopflowproservice.dto.MechanicDTO;
 import com.wsu.shopflowproservice.service.MechanicService;
 import com.wsu.shopflowproservice.utilities.Constants;
+
+import jakarta.validation.Valid;
+
 import static com.wsu.shopflowproservice.utilities.Constants.MESSAGE;
 import static com.wsu.shopflowproservice.utilities.Constants.PAGE_COUNT;
 import static com.wsu.shopflowproservice.utilities.Constants.RESULT_COUNT;
@@ -41,9 +45,10 @@ public class MechanicController {
     
      @GetMapping
      public ResponseEntity<ServiceResponseDTO> getAllMechanics(@RequestParam(required = false) String search,
-                                                                            // RequestParams
-
-                                                                                        {
+                                                                            @RequestParam(required = false, defaultValue = "1") Integer page,
+                                                                            @RequestParam(required = false, defaultValue = "10") Integer rpp,
+                                                                            @RequestParam(required = false, defaultValue = "technicianCode") String sortField,
+                                                                            @RequestParam(required = false, defaultValue = Constants.DESC) String sortOrder){
 
         Page<MechanicDTO> mechanicDTOPage = mechanicService.get(search, sortField, sortOrder, page, rpp);
         return new ResponseEntity<>(ServiceResponseDTO.builder().meta(Map.of(MESSAGE, "Successfully retrieved mechanics.", PAGE_COUNT,
@@ -60,10 +65,9 @@ public class MechanicController {
 
      @PostMapping
      public ResponseEntity<ServiceResponseDTO> save(@RequestBody @Valid MechanicDTO mechanicDTO) {
-        /**
-         * if statement for if no id was entered or if you did enter something then
-         * have mechanic added
-         */
+        if (!StringUtils.hasLength(mechanicDTO.getCode())) {
+          throw new InvalidRequestException
+        }
      }
 
 
@@ -75,7 +79,7 @@ public class MechanicController {
       */
       
       @PutMapping("/{mechanicID}")
-      public ResponseEntity<ServiceResponseDTO> update(@PathVariable String mechanicID, @RequestBody @Valid MechanicDTO mechanicDTO) {
+      public ResponseEntity<ServiceResponseDTO> update(@PathVariable Integer mechanicID, @RequestBody @Valid MechanicDTO mechanicDTO) {
         /**
          * block of code thet has MESSAGE of mechanic updated successfully
          * useing mechanicService.update() and using builder()
@@ -89,7 +93,7 @@ public class MechanicController {
        */
 
        @DeleteMapping("/{id}")
-       public ResponseEntity<ServiceResponseDTO> deleteMechanic(@PathVariable String id) {
+       public ResponseEntity<ServiceResponseDTO> deleteMechanic(@PathVariable Integer id) {
         /**
          * use delete() method within mechanicService
          * return Message For successfully deleted mechanic

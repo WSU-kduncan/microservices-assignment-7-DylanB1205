@@ -2,15 +2,32 @@ package com.wsu.shopflowproservice.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.wsu.shopflowproservice.dto.ServiceOrderDTO;
+import com.wsu.shopflowproservice.dto.ServiceResponseDTO;
 import com.wsu.shopflowproservice.service.ServiceOrderService;
 
+import io.micrometer.core.ipc.http.HttpSender.Response;
+import lombok.RequiredArgsConstructor;
+
+import static com.wsu.shopflowproservice.utilities.Constants.MESSAGE;
+import static com.wsu.shopflowproservice.utilities.Constants.PAGE_COUNT;
+import static com.wsu.shopflowproservice.utilities.Constants.RESULT_COUNT;
+
+import java.util.Map;
+
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/serviceOrders")
 public class ServiceOrderController {
 
     private final ServiceOrderService serviceOrderService;
@@ -22,10 +39,8 @@ public class ServiceOrderController {
      */
     @GetMapping(value = "{serviceOrderId}")
     public ResponseEntity<ServiceResponseDTO> getServiceOrder(@PathVariable Integer serviceOrderId) {
-        /**
-         * returns message for successfully retrieved service order
-         * Uses builder() and ServiceOrderService.get() with serviceOrderId
-         */
+        return new ResponseEntity<>(ServiceResponseDTO.builder().meta(Map.of(MESSAGE, "Service Order retrieved successfully"))
+        .data(serviceOrderService.get(serviceOrderId)).build(), HttpStatus.OK);
     }
 
     /**
@@ -33,13 +48,10 @@ public class ServiceOrderController {
      * @param serviceOrder - serviceOrder
      * @return - ServiceResponseDTO which include serviceOrder saved entity
      */
-    
     @PostMapping
     public ResponseEntity<ServiceResponseDTO> addServiceOrder(@RequestBody ServiceOrderDTO serviceOrder) {
-        /**
-         * Message for serviceOrder added successfully
-         * uses builder() and ServiceOrderService.add() with the serviceOrder
-         */
+        return new ResponseEntity<>(ServiceResponseDTO.builder().meta(Map.of(MESSAGE, "ServiceOrder added successfully."))
+        .data(ServiceOrderService.add(serviceOrder)).build(), HttpStatus.CREATED);
     }
 
     /**
@@ -51,9 +63,13 @@ public class ServiceOrderController {
     //
     @PutMapping(value = "{serviceOrderId}")
     public ResponseEntity<ServiceResponseDTO> updateServiceOrder(@PathVariable Integer serviceOrderId, @RequestBody ServiceOrderDTO serviceOrder) {
-        /**
-         * returns message of service order updated successfully
-         * USes builder() and ServiceOrder.update()
-         */
+        return new ResponseEntity<>(ServiceResponseDTO.builder().meta(Map.of(MESSAGE, "ServiceOrder updated successfully"))
+        .data(ServiceOrderService.update(serviceOrderId, serviceOrder)).build(), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{serviceOrderId}")
+    public ResponseEntity<ServiceResponseDTO> deleteServiceOrder(@PathVariable Integer serviceOrderId) {
+        serviceOrderService.delete(serviceOrderId);
+        return new ResponseEntity<>(ServiceResponseDTO.builder().meta(Map.of(MESSAGE, "ServiceOrder deleted successfully")).build(), HttpStatus.OK);
     }
 }
