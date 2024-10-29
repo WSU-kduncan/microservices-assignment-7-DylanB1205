@@ -6,7 +6,5 @@ import com.wsu.shopflowproservice.model.ServiceOrder;
 
 public interface ServiceOrderRepository extends JpaRepository<ServiceOrder, Integer> {
 
-    /**
-     * Native Query using sql script
-     */
+    @Query(nativeQuery = true, value = "Select s.")
 }

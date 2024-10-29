@@ -18,7 +18,7 @@ public class ServiceOrderDTO {
     private Integer serviceOrderId;
     private String VIN;
     private Integer mechanicId;
-    private Integer ServiceId;
+    private Integer serviceId;
     private Date dateRecieved;
     private Date dateCompleted;
     private String customerFirstName;
