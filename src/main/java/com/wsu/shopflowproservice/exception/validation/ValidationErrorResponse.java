@@ -1,4 +1,4 @@
-package com.wsu.shopflowproservice.exception.validation;
+package com.wsu.workorderproservice.exception.validation;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

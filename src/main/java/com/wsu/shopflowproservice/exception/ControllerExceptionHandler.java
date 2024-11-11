@@ -1,12 +1,11 @@
-package com.wsu.shopflowproservice.exception;
+package com.wsu.workorderproservice.exception;
 
-import com.wsu.shopflowproservice.dto.ServiceResponseDTO;
-import com.wsu.shopflowproservice.exception.validation.ValidationError;
-import com.wsu.shopflowproservice.exception.validation.ValidationErrorResponse;
-
+import com.wsu.workorderproservice.dto.ServiceResponseDTO;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.wsu.workorderproservice.exception.validation.ValidationError;
+import com.wsu.workorderproservice.exception.validation.ValidationErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -14,8 +13,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import static com.wsu.shopflowproservice.utilities.Constants.MESSAGE;
-import static com.wsu.shopflowproservice.utilities.Constants.ERROR_MESSAGE;
+import static com.wsu.workorderproservice.utilities.Constants.ERROR_MESSAGE;
+import static com.wsu.workorderproservice.utilities.Constants.MESSAGE;
 
 //@ControllerAdvice annotation in Spring is used to define a class that handles exceptions across multiple controllers in an application
 @ControllerAdvice

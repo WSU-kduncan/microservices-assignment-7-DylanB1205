@@ -1,5 +1,6 @@
 package com.wsu.shopflowproservice.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,12 +14,15 @@ import lombok.Setter;
 @Builder
 public class MechanicDTO {
 
-    /**
-     * Fields for first name
-     * last name
-     * mechanic id 
-     * 
-     * all three should be @NotBlank
-     */
-    
+    private Integer id;
+
+    @NotBlank(message = "First Name must not be null or blank")
+    private String firstName;
+
+    @NotBlank(message = "Last Name must not be null or blank")
+    private String lastName;
+
+    @NotBlank(message = "Specialization must not be null or blank")
+    private String specialization;
+
 }

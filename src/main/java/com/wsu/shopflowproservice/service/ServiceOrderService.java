@@ -1,20 +1,16 @@
 package com.wsu.shopflowproservice.service;
 
-import java.lang.StackWalker.Option;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import com.wsu.shopflowproservice.exception.DatabaseErrorException;
 import com.wsu.shopflowproservice.exception.InvalidRequestException;
 
-import com.wsu.shopflowproservice.dto.MechanicDTO;
 import com.wsu.shopflowproservice.dto.ServiceOrderDTO;
-import com.wsu.shopflowproservice.model.Mechanic;
 import com.wsu.shopflowproservice.model.ServiceOrder;
 import com.wsu.shopflowproservice.model.ServiceOrderLineItem;
 import com.wsu.shopflowproservice.repository.ServiceOrderRepository;
@@ -40,7 +36,7 @@ public class ServiceOrderService {
             return serviceOrderRepository.findById(serviceOrderId).orElse(null);
         } catch (Exception e) {
             log.error("Failed to retrieve ServiceOrder details. serviceOrderId:{}, Exception{}", serviceOrderId, e);
-            throw new DatabaseErrorException("Failed to retrieve ServiceOrder details.", e)
+            throw new DatabaseErrorException("Failed to retrieve ServiceOrder details.", e);
         }
     }
 
@@ -55,7 +51,7 @@ public class ServiceOrderService {
             return serviceOrderRepository.save(serviceOrderResp);
         } catch (Exception e) {
             log.error("Failed to add ServiceOrder. Exception: ", e);
-            throw new DatabaseErrorException("Failed to add new ServiceOrder", e)
+            throw new DatabaseErrorException("Failed to add new ServiceOrder", e);
         }
     }
 
@@ -74,16 +70,22 @@ public class ServiceOrderService {
             return serviceOrderRepository.save(serviceOrder);
         } catch (Exception e) {
             log.error("Failed to update ServiceOrder. serviceOrderId:{}, Exception:{}", serviceOrderId, e);
-            throw new DatabaseErrorException("Failed to update ServiceOrder", e)
+            throw new DatabaseErrorException("Failed to update ServiceOrder", e);
         }
     }
 
-    public void delete(){
-        /**
-         * Deletes a service order
-         * uses try catch block
-         * throws databseErrorException
-         */
+    public void delete(Integer serviceOrderId){
+        try {
+            Optional<ServiceOrder> serviceOrder = serviceOrderRepository.findById(serviceOrderId);
+            if (serviceOrder.isEmpty()) {
+                throw new InvalidRequestException("Invalid ServiceOrder Id");
+            }
+            serviceOrderRepository.deleteById(serviceOrderId);
+            log.info("ServiceOrder with id {} deleted successfully.", serviceOrderId);
+        } catch (Exception e) {
+            log.error("Failed to delete ServiceOrder. serviceOrderId:{}, Exception:{}", serviceOrderId, e);
+            throw new DatabaseErrorException("Failed to delete ServiceOrder", e);
+        }
     }
 
 }

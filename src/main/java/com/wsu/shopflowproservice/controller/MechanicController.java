@@ -1,33 +1,22 @@
 package com.wsu.shopflowproservice.controller;
 
-import org.hibernate.mapping.Map;
-import org.springframework.data.domain.Page;
+import com.wsu.shopflowproservice.dto.ServiceResponseDTO;
+import com.wsu.shopflowproservice.dto.MechanicDTO;
+import com.wsu.shopflowproservice.exception.InvalidRequestException;
+import com.wsu.shopflowproservice.service.MechanicService;
+import com.wsu.shopflowproservice.utilities.Constants;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.wsu.shopflowproservice.dto.MechanicDTO;
-import com.wsu.shopflowproservice.service.MechanicService;
-import com.wsu.shopflowproservice.utilities.Constants;
+import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
-
-import static com.wsu.shopflowproservice.utilities.Constants.MESSAGE;
-import static com.wsu.shopflowproservice.utilities.Constants.PAGE_COUNT;
-import static com.wsu.shopflowproservice.utilities.Constants.RESULT_COUNT;
-
-
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+
+import java.util.Map;
+
+import static com.wsu.shopflowproservice.utilities.Constants.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,68 +25,67 @@ public class MechanicController {
 
     private final MechanicService mechanicService;
 
-    /**
-     * Will need a GetMapping to retireve page of Mechanics based on filter
-     * It will look somewhat roughly like this? I based it off the mechanics one for work order pro
-     * I dont completely understand the @RequestParam parts.
-     * @return - ServiceResponseDTO which include list of technicians and pagination info along with success message.
-     */
-    
-     @GetMapping
-     public ResponseEntity<ServiceResponseDTO> getAllMechanics(@RequestParam(required = false) String search,
-                                                                            @RequestParam(required = false, defaultValue = "1") Integer page,
-                                                                            @RequestParam(required = false, defaultValue = "10") Integer rpp,
-                                                                            @RequestParam(required = false, defaultValue = "technicianCode") String sortField,
-                                                                            @RequestParam(required = false, defaultValue = Constants.DESC) String sortOrder){
-
+    /** 
+     * This endpoint retrieves a page of mechanics based on the given filter and pagination.
+     * @param search - optional, allows typeahead search by mechanic's name, code, or status
+     * @param page - optional, specifies the page number (default value is 1)
+     * @param rpp - optional, specifies results per page (default value is 10)
+     * @param sortField - optional, specifies the field to sort results by (default is mechanicCode)
+     * @param sortOrder - optional, specifies sort order (default is Descending)
+     * @return - ServiceResponseDTO which includes a list of mechanics and pagination info with a success message
+     **/
+    @GetMapping
+    public ResponseEntity<ServiceResponseDTO> getAllMechanics(@RequestParam(required = false) String search,
+                                                              @RequestParam(required = false, defaultValue = "1") Integer page,
+                                                              @RequestParam(required = false, defaultValue = "10") Integer rpp,
+                                                              @RequestParam(required = false, defaultValue = "mechanicId") String sortField,
+                                                              @RequestParam(required = false, defaultValue = Constants.DESC) String sortOrder) {
         Page<MechanicDTO> mechanicDTOPage = mechanicService.get(search, sortField, sortOrder, page, rpp);
-        return new ResponseEntity<>(ServiceResponseDTO.builder().meta(Map.of(MESSAGE, "Successfully retrieved mechanics.", PAGE_COUNT,
-                    mechanicDTOPage.getTotalPages(), RESULT_COUNT, mechanicDTOPage.getTotalElements()))
+        return new ResponseEntity<>(ServiceResponseDTO.builder()
+                .meta(Map.of(MESSAGE, "Successfully retrieved mechanics.", PAGE_COUNT, mechanicDTOPage.getTotalPages(), RESULT_COUNT, mechanicDTOPage.getTotalElements()))
                 .data(mechanicDTOPage.getContent()).build(), HttpStatus.OK);
-           
-           }
+    }
 
     /**
-     * Next enpoint will be for the @PostMapping to create new mechanics
-     * @param mechanicDTO - contains mechanic info
-     * @return - ServiceResponseDTO has HTTP status
-     */
-
-     @PostMapping
-     public ResponseEntity<ServiceResponseDTO> save(@RequestBody @Valid MechanicDTO mechanicDTO) {
-        if (!StringUtils.hasLength(mechanicDTO.getCode())) {
-          throw new InvalidRequestException
+     * This endpoint creates a new mechanic in the database.
+     * @param mechanicDTO - payload containing mechanic details
+     * @return - ServiceResponseDTO with HTTP status and the newly created mechanic details
+     **/
+    @PostMapping
+    public ResponseEntity<ServiceResponseDTO> save(@RequestBody @Valid MechanicDTO mechanicDTO) {
+        if (!StringUtils.hasLength(mechanicDTO.getId())) {
+            throw new InvalidRequestException("Mechanic code must be provided.");
         }
-     }
+        return new ResponseEntity<>(ServiceResponseDTO.builder()
+                .meta(Map.of(MESSAGE, "Successfully added mechanic"))
+                .data(mechanicService.save(mechanicDTO)).build(), HttpStatus.CREATED);
+    }
 
+    /**
+     * This endpoint updates a mechanic's details by mechanic code.
+     * @param mechanicId - mechanic's unique code
+     * @param mechanicDTO - payload containing updated mechanic details
+     * @return - HTTP status with the updated mechanic DTO
+     **/
+    @PutMapping("/{mechanicId}")
+    public ResponseEntity<ServiceResponseDTO> update(@PathVariable Integer mechanicId,
+                                                     @RequestBody @Valid MechanicDTO mechanicDTO) {
+        return new ResponseEntity<>(ServiceResponseDTO.builder()
+                .meta(Map.of(MESSAGE, "Mechanic updated successfully"))
+                .data(mechanicService.update(mechanicId, mechanicDTO)).build(), HttpStatus.OK);
+    }
 
-     /**
-      * This endpoint is for updating mechanics via their mechanic id.
-      * @param mechanicID - mechanicID
-      * @param mechanicDTO - has mechanic info
-      * @return - HTTP status and DTO
-      */
-      
-      @PutMapping("/{mechanicID}")
-      public ResponseEntity<ServiceResponseDTO> update(@PathVariable Integer mechanicID, @RequestBody @Valid MechanicDTO mechanicDTO) {
-        /**
-         * block of code thet has MESSAGE of mechanic updated successfully
-         * useing mechanicService.update() and using builder()
-         */
-      }
+    /**
+     * This endpoint deletes a mechanic by mechanic code.
+     * @param code - the code of the mechanic to be deleted
+     * @return - HTTP status confirming the deletion
+     **/
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ServiceResponseDTO> deleteMechanic(@PathVariable String id) {
+        mechanicService.delete(id);
+        return new ResponseEntity<>(ServiceResponseDTO.builder()
+                .meta(Map.of(MESSAGE, "Mechanic deleted successfully")).build(), HttpStatus.OK);
+    } 
 
-      /**
-       * This endpoint is for deleting mechanics
-       * @param id - mechanicsID used for deleting technician
-       * @return - HTTP Status of deleted Mechanic
-       */
-
-       @DeleteMapping("/{id}")
-       public ResponseEntity<ServiceResponseDTO> deleteMechanic(@PathVariable Integer id) {
-        /**
-         * use delete() method within mechanicService
-         * return Message For successfully deleted mechanic
-         */
-       }
-
+    
 }
