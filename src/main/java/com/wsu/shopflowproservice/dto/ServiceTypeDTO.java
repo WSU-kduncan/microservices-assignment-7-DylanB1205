@@ -1,4 +1,4 @@
-package com.wsu.workorderproservice.dto;
+package com.wsu.shopflowproservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 
-public class ServiceDTO {
+public class ServiceTypeDTO {
     private String serviceName;
     private int serviceID;
 }
